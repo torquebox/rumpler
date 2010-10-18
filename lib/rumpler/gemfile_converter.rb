@@ -19,7 +19,9 @@ module Rumpler
       'ruby-debug'=>'010',
       'ruby-debug-base'=>'010',
       'sources'=>'00',
+      'bundler'=>'*',
       'rack'=>'*',
+      'bouncy-castle'=>'*',
       'jruby-openssl'=>'*',
     }
     SPEC_EXCLUDES_REGEXPS = [
@@ -27,6 +29,7 @@ module Rumpler
       /^actionpack/,
       /^actionmailer/,
       /^activerecord/,
+      /^activemodel/,
       /^activeresource/,
       /^railties/,
       /^rails/,

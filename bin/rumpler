@@ -5,7 +5,6 @@ $: << File.join( File.dirname(__FILE__), '..', 'lib' )
 require 'rubygems'
 require 'bundler'
 
-Gem.platforms.push( Gem::Platform::JAVA )
 
 require 'rumpler/config'
 require 'rumpler/gemfile_converter'
@@ -19,6 +18,7 @@ batch = OpenStruct.new
 
 batch.output_dir         = './build'
 batch.inhibit_exclusions = false
+batch.version            = '0.0.0-dev'
 
 opts = OptionParser.new do |opts|
 
@@ -29,6 +29,10 @@ opts = OptionParser.new do |opts|
 
   opts.on( '-a', '--application' ) do
     batch.mode = :application
+  end
+
+  opts.on( '-V version' ) do |version|
+    batch.version = version
   end
 
   opts.on( '-G', '--gemfile' ) do 
@@ -57,10 +61,12 @@ end
 
 opts.parse!( ARGV )
 
+Gem.platforms.push( Gem::Platform::JAVA )
+
 case ( batch.mode )
   when :application
     if ( ARGV.empty? )
-      converter = Rumpler::ApplicationConverter.new( Dir.pwd, batch.output_dir ).dump
+      converter = Rumpler::ApplicationConverter.new( Dir.pwd, batch.version, batch.output_dir ).dump
     else
       puts "Argument not accepted yet, complain to Bob"
     end

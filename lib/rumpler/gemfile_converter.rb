@@ -23,6 +23,13 @@ module Rumpler
       'jruby-openssl'=>'*',
     }
     SPEC_EXCLUDES_REGEXPS = [
+      /^activesupport/,
+      /^actionpack/,
+      /^actionmailer/,
+      /^activerecord/,
+      /^activeresource/,
+      /^railties/,
+      /^rails/,
       /^activerecord-jdbc/,
       /^jdbc-/,
     ]
@@ -65,6 +72,7 @@ module Rumpler
     end
 
     def should_exclude_spec?(name, version)
+      return true if name == 'rake'
       return false if @inhibit_exclusions
       exclude_versions = SPEC_EXCLUDES[ name ]
       if ( ! exclude_versions.nil? )

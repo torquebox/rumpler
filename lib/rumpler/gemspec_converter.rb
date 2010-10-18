@@ -60,6 +60,12 @@ module Rumpler
       @gemspec.description.to_s.chomp
     end
   
+    def major_minor()
+      major = gemspec.version.segments[0]
+      minor = gemspec.version.segments[1]
+      "#{major}#{minor}"
+    end
+
     def rpm_name()
       major = gemspec.version.segments[0]
       minor = gemspec.version.segments[1]

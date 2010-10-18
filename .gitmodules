@@ -1,3 +1,0 @@
-[submodule "lib/cantiere"]
-	path = lib/cantiere
-	url = git://github.com/stormgrind/cantiere.git

@@ -17,6 +17,7 @@ Gem::Installer.new( "%{SOURCE0}", {
   :ignore_dependencies=>true,
   :install_dir=>"%{buildroot}%{gem_dir}",
   :bin_dir=>"%{buildroot}%{bin_dir}",
+  :wrappers=>true,
 } ).install
 
 

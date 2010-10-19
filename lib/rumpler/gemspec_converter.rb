@@ -123,13 +123,14 @@ module Rumpler
     end
   
     def dump_global_variables
-      emit "%global tree_prefix  #{ruby_config.tree_prefix}"
-      emit "%global ruby_sitelib #{ruby_config.ruby_sitelib}"
-      emit "%global gem_dir      #{ruby_config.gem_dir}"
-      emit "%global bin_dir      #{ruby_config.bin_dir}"
-      emit "%global gem_name     #{gem_name}"
-      emit "%global gem_instdir  %{gem_dir}/gems/%{gem_name}-%{version}"
-      emit "%global ruby_abi     #{ruby_config.ruby_abi}"
+      emit "%global tree_prefix       #{ruby_config.tree_prefix}"
+      emit "%global ruby_sitelib      #{ruby_config.ruby_sitelib}"
+      emit "%global gem_dir           #{ruby_config.gem_dir}"
+      emit "%global bin_dir           #{ruby_config.bin_dir}"
+      emit "%global gem_name          #{gem_name}"
+      emit "%global gem_package_name  #{base_gem_package_name}"
+      emit "%global gem_instdir       %{gem_dir}/gems/%{gem_name}-%{version}"
+      emit "%global ruby_abi          #{ruby_config.ruby_abi}"
       emit ''
     end
   
@@ -191,8 +192,21 @@ module Rumpler
       emit "install -m 755 -d %{buildroot}%{bin_dir}"
       emit "install -m 755 -d %{buildroot}%{gem_dir}"
       emit "install -m 755 -d %{buildroot}%{gem_dir}/gems/#{base_gem_package_name}/lib"
-      emit "gem install --local --bindir %{buildroot}%{bin_dir} --install-dir %{buildroot}%{gem_dir} --force --ignore-dependencies --platform #{platform} %{SOURCE0}"
       emit ""
+      dump_installer
+      #emit "gem install --local --bindir %{buildroot}%{bin_dir} --install-dir %{buildroot}%{gem_dir} --force --ignore-dependencies --platform #{platform} %{SOURCE0}"
+      emit "ruby ./installer.rb %{SOURCE0}"
+      emit ""
+    end
+
+    def dump_installer
+      emit "rm -f installer.rb"
+      File.open( File.join( File.dirname(__FILE__), 'installer.rb' ) ) do |f|
+        f.each_line do |line|
+          emit "echo -n '#{line}' >> installer.rb"
+        end 
+      end
+      emit ''
     end
   
     def dump_clean

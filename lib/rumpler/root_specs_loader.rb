@@ -29,6 +29,7 @@ module Rumpler
       if ( @cache.nil? )
         roots_yaml     = YAML.load( File.read( @root_specs_yaml ) )
         inherent_specs = resolve_gemfiles( roots_yaml['inherent'] )
+        inherent_specs.reject!{|e| e.name == 'bundler'}
         base_specs     = resolve_gemfiles( roots_yaml['base'] )
         @cache         = build_cache( inherent_specs, base_specs )
 
@@ -94,10 +95,16 @@ module Rumpler
       (@cache[:inherent] + @cache[:base]).uniq
     end
 
+    def pure_base
+      @cache[:base].reject do |b|
+        @cache[:inherent].any?{|i| ( i[:name] == b[:name] ) && ( i[:version] == b[:version] ) }
+      end
+    end
+
     def dump
       puts "Reading #{@root_specs_yaml}"
       resolve
-      @cache[:base].each do |details|
+      pure_base.each do |details|
         spec_spec = [ details[:name], 
                       details[:gem_version].to_s,
                       details[:platform] ] 

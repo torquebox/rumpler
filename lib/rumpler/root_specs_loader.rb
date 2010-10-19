@@ -101,9 +101,7 @@ module Rumpler
         spec_spec = [ details[:name], 
                       details[:gem_version].to_s,
                       details[:platform] ] 
-        puts spec_spec
         gemspec = Gem::SpecFetcher.fetcher.fetch_spec( spec_spec, URI.parse( details[:source] ) )
-        puts gemspec.inspect
         converter = GemspecConverter.new( out_dir, Config.new, gemspec )
         converter.dump
       end

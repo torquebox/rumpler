@@ -50,8 +50,8 @@ module Rumpler
       @exclusions.each do |e|
         if ( ( e[:name] == spec.name ) && 
              ( e[:platform] == spec.platform ) && 
-             ( e.version[0] == spec.version.segments[0] ) &&
-             ( e.version[1] == spec.version.segments[1] ) )
+             ( e[:version][0] == spec.version.segments[0] ) &&
+             ( e[:version][1] == spec.version.segments[1] ) )
           return true
         end
       end

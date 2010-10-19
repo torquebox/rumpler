@@ -77,12 +77,14 @@ Gem.platforms.push( Gem::Platform::JAVA )
 
 case ( batch.mode )
   when :application
+    exclusions = Rumpler::RootSpecsLoader.new( batch.root, batch.force).exclusions
     if ( ARGV.empty? )
-      converter = Rumpler::ApplicationConverter.new( Dir.pwd, batch.version, batch.output_dir ).dump
+      converter = Rumpler::ApplicationConverter.new( Dir.pwd, batch.version, batch.output_dir, exclusions ).dump
     else
       puts "Argument not accepted yet, complain to Bob"
     end
   when :gemfile
+    exclusions = Rumpler::RootSpecsLoader.new( batch.root, batch.force).exclusions
     ARGV.each do |gemfile|
       converter = Rumpler::GemfileConverter.new( gemfile, batch.output_dir )
       converter.inhibit_exclusions = batch.inhibit_exclusions

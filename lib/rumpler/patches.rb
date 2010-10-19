@@ -14,3 +14,9 @@ module Gem
     end
   end
 end
+
+module Bundler
+  class RemoteSpecification
+    attr_accessor :source_uri
+  end
+end

@@ -8,11 +8,13 @@ module Rumpler
     attr_accessor :app_dir
     attr_accessor :output_dir
     attr_accessor :version
+    attr_accessor :exclusions
 
-    def initialize(app_dir, version, output_dir)
+    def initialize(app_dir, version, output_dir, exclusions=[])
       @app_dir = app_dir
       @version = version
       @output_dir = output_dir
+      @exclusions = exclusions
     end
 
     def dump()
@@ -21,11 +23,11 @@ module Rumpler
     end
 
     def dump_dependencies()
-      puts "Dumping #{app_dir}"
+      puts "Analyzing #{app_dir}"
 
       gemfile = File.join( app_dir, 'Gemfile' )
 
-      @gemfile_converter = GemfileConverter.new( gemfile, output_dir )
+      @gemfile_converter = GemfileConverter.new( gemfile, output_dir, Config.new, exclusions )
       @gemfile_converter.dump()
     end
 

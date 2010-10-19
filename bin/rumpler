@@ -9,8 +9,11 @@ require 'bundler'
 require 'rumpler/config'
 require 'rumpler/gemfile_converter'
 require 'rumpler/gemspec_converter'
+require 'rumpler/root_specs_loader'
 
 require 'rumpler/application_converter'
+
+require 'rumpler/patches'
 
 require 'ostruct'
 
@@ -19,6 +22,7 @@ batch = OpenStruct.new
 batch.output_dir         = './build'
 batch.inhibit_exclusions = false
 batch.version            = '0.0.0-dev'
+batch.force_root         = false
 
 opts = OptionParser.new do |opts|
 
@@ -41,6 +45,15 @@ opts = OptionParser.new do |opts|
 
   opts.on( '-g', '--gem' ) do 
     batch.mode    = :gem
+  end
+
+  opts.on( '-r', '--root ROOT' ) do |root|
+    batch.root = root
+  end
+
+  opts.on( '--force-root ROOT' ) do |root|
+    batch.root = root
+    batch.force_root = true
   end
 
   opts.on( '-o', '--output OUTPDIR' ) do |output_dir|
@@ -75,5 +88,9 @@ case ( batch.mode )
       converter = Rumpler::GemfileConverter.new( gemfile, batch.output_dir )
       converter.inhibit_exclusions = batch.inhibit_exclusions
       converter.dump
+    end
+  else
+    if ( ! batch.root.nil? )
+      Rumpler::RootSpecsLoader.new( batch.root, batch.force_root, batch.output_dir ).dump
     end
 end

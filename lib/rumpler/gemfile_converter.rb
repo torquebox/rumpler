@@ -105,14 +105,8 @@ module Rumpler
     end
   
     def dump_spec(gemspec)
-      converter = GemspecConverter.new( ruby_config, gemspec )
-      rpmspec_path = File.join( output_dir, converter.rpm_name + '.spec' )
-      puts "Dumping #{rpmspec_path}"
-      FileUtils.mkdir_p( File.dirname( rpmspec_path ) )
-      File.open( rpmspec_path, 'w' ) do |file|
-        converter.out = file
-        converter.dump
-      end
+      converter = GemspecConverter.new( output_dir, ruby_config, gemspec )
+      converter.dump
     end
   
   end

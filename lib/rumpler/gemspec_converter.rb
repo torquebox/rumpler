@@ -25,13 +25,15 @@ end
 module Rumpler
   class GemspecConverter
   
+    attr_accessor :output_dir
     attr_accessor :gemspec
     attr_accessor :ruby_config
-    attr_accessor :out
   
-    def initialize(ruby_config, gemspec)
+    def initialize(output_dir, ruby_config, gemspec)
+      @output_dir  = output_dir
       @ruby_config = ruby_config
-      @gemspec = gemspec
+      @gemspec     = gemspec
+      @out         = nil
     end
     
     def emit(*args)
@@ -89,9 +91,27 @@ module Rumpler
     end
   
     def dump()
-      dump_prolog
+      rpmspec_path = File.join( output_dir, rpm_name + '.spec' )
+      puts "Dumping #{rpmspec_path}"
+      FileUtils.mkdir_p( File.dirname( rpmspec_path ) )
+      File.open( rpmspec_path, 'w' ) do |file|
+        @out = file
+        dump_all()
+      end
     end
   
+    def dump_all
+      dump_prolog
+
+      dump_prep
+      dump_build
+      dump_install
+      dump_clean
+  
+      dump_files
+      dump_changelog
+    end
+
     def dump_prolog
       dump_global_variables
       dump_package_summary
@@ -100,13 +120,6 @@ module Rumpler
   
       dump_description 
   
-      dump_prep
-      dump_build
-      dump_install
-      dump_clean
-  
-      dump_files
-      dump_changelog
     end
   
     def dump_global_variables

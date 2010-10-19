@@ -22,7 +22,7 @@ batch = OpenStruct.new
 batch.output_dir         = './build'
 batch.inhibit_exclusions = false
 batch.version            = '0.0.0-dev'
-batch.force_root         = false
+batch.force              = false
 
 opts = OptionParser.new do |opts|
 
@@ -51,9 +51,8 @@ opts = OptionParser.new do |opts|
     batch.root = root
   end
 
-  opts.on( '--force-root ROOT' ) do |root|
-    batch.root = root
-    batch.force_root = true
+  opts.on( '-f', '--force' ) do 
+    batch.force = true
   end
 
   opts.on( '-o', '--output OUTPDIR' ) do |output_dir|
@@ -91,6 +90,6 @@ case ( batch.mode )
     end
   else
     if ( ! batch.root.nil? )
-      Rumpler::RootSpecsLoader.new( batch.root, batch.force_root, batch.output_dir ).dump
+      Rumpler::RootSpecsLoader.new( batch.root, batch.force, batch.output_dir ).dump
     end
 end

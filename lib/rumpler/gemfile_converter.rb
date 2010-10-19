@@ -5,38 +5,6 @@ require 'fileutils'
 module Rumpler
   class GemfileConverter
   
-    DEP_EXCLUDES = [
-      %r(^org.torquebox),
-      %r(^rails$),
-      %r(^rack$),
-      %r(^bundler$),
-    ]
-
-    SPEC_EXCLUDES = {
-      'columnize'=>'03',
-      'rake'=>'08',
-      'rspec'=>'13',
-      'ruby-debug'=>'010',
-      'ruby-debug-base'=>'010',
-      'sources'=>'00',
-      'bundler'=>'*',
-      'rack'=>'*',
-      'bouncy-castle'=>'*',
-      'jruby-openssl'=>'*',
-    }
-    SPEC_EXCLUDES_REGEXPS = [
-      /^activesupport/,
-      /^actionpack/,
-      /^actionmailer/,
-      /^activerecord/,
-      /^activemodel/,
-      /^activeresource/,
-      /^railties/,
-      /^rails/,
-      /^activerecord-jdbc/,
-      /^jdbc-/,
-    ]
-
     attr_accessor :gemfile
     attr_accessor :ruby_config
     attr_accessor :definition
@@ -67,28 +35,10 @@ module Rumpler
     end
 
     def should_exclude_dep?(name)
-      return false if @inhibit_exclusions
-      DEP_EXCLUDES.each do |regexp|
-        return true if ( regexp =~ name )
-      end
       false
     end
 
     def should_exclude_spec?(name, version)
-      return true if name == 'rake'
-      return false if @inhibit_exclusions
-      exclude_versions = SPEC_EXCLUDES[ name ]
-      if ( ! exclude_versions.nil? )
-        test = "#{version.segments[0]}#{version.segments[1]}"
-        if ( ( exclude_versions.to_s == '*' ) || [ exclude_versions ].flatten.include?( test ) )
-          return true
-        end
-      end
-
-     SPEC_EXCLUDES_REGEXPS.each do |r|
-       return true if ( r =~ name )
-     end
-
      false
     end
   

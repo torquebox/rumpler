@@ -1,7 +1,9 @@
 
 class Array
   def hash 
-    to_s.hash
+    inject(0) do |h, e|
+      h += e.hash / size
+    end
   end
 end
 

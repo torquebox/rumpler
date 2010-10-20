@@ -142,6 +142,7 @@ module Rumpler
       emit "License: GPLv2+ or Ruby"
       emit "BuildArch: #{rpm_arch}"
       emit "Summary: #{summary}"
+      emit "AutoReqProv: no"
   
       if (gemspec.homepage)
         emit "URL: #{gemspec.homepage}"
@@ -203,7 +204,7 @@ module Rumpler
       emit "rm -f installer.rb"
       File.open( File.join( File.dirname(__FILE__), 'installer.rb' ) ) do |f|
         f.each_line do |line|
-          emit "echo -n '#{line}' >> installer.rb"
+          emit "echo '#{line.chomp}' >> installer.rb"
         end 
       end
       emit ''

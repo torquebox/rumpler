@@ -1,4 +1,5 @@
 
+require 'rumpler/root_spec_writer'
 
 module Rumpler
 
@@ -6,16 +7,23 @@ module Rumpler
 
     attr_accessor :out_dir
 
+    attr_accessor :name
+    attr_accessor :version
+
     attr_accessor :inherent_specs
     attr_accessor :base_specs
 
-    def initialize(root_specs_yaml, force_root, out_dir=nil)
+    def initialize(name, version, root_specs_yaml, force_root, out_dir=nil)
+      @name            = name
+      @version         = version
       @root_specs_yaml = root_specs_yaml
       @force_root      = force_root
       @cache           = {}
       @base_specs      = []
       @out_dir         = out_dir
       @resolved        = false
+
+      @gemspecs        = []
     end
 
     def resolve
@@ -102,6 +110,11 @@ module Rumpler
     end
 
     def dump
+      dump_specs
+      dump_aggregator
+    end
+
+    def dump_specs
       puts "Reading #{@root_specs_yaml}"
       resolve
       pure_base.each do |details|
@@ -111,6 +124,16 @@ module Rumpler
         gemspec = Gem::SpecFetcher.fetcher.fetch_spec( spec_spec, URI.parse( details[:source] ) )
         converter = GemspecConverter.new( out_dir, Config.new, gemspec )
         converter.dump
+        @gemspecs << gemspec
+      end
+    end
+
+    def dump_aggregator
+      puts "Writing aggregator RPM"
+      config = Config.new
+      spec_file = File.join( out_dir, "#{name}.spec" )
+      File.open( spec_file, 'w' ) do |f|
+        RootSpecWriter.new( name, version, @gemspecs, Config.new, f ).dump()
       end
     end
 

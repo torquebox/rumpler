@@ -23,6 +23,7 @@ batch.output_dir         = './build'
 batch.inhibit_exclusions = false
 batch.version            = '0.0.0-dev'
 batch.force              = false
+batch.name               = 'bundle'
 
 opts = OptionParser.new do |opts|
 
@@ -51,6 +52,10 @@ opts = OptionParser.new do |opts|
     batch.root = root
   end
 
+  opts.on( '-n', '--name NAME' ) do |name|
+    batch.name = name
+  end
+
   opts.on( '-f', '--force' ) do 
     batch.force = true
   end
@@ -77,7 +82,7 @@ Gem.platforms.push( Gem::Platform::JAVA )
 
 case ( batch.mode )
   when :application
-    exclusions = Rumpler::RootSpecsLoader.new( batch.root, batch.force).exclusions
+    exclusions = Rumpler::RootSpecsLoader.new( nil, nil, batch.root, batch.force).exclusions
     if ( ARGV.empty? )
       converter = Rumpler::ApplicationConverter.new( Dir.pwd, batch.version, batch.output_dir, exclusions ).dump
     else
@@ -92,6 +97,6 @@ case ( batch.mode )
     end
   else
     if ( ! batch.root.nil? )
-      Rumpler::RootSpecsLoader.new( batch.root, batch.force, batch.output_dir ).dump
+      Rumpler::RootSpecsLoader.new( batch.name, batch.version, batch.root, batch.force, batch.output_dir ).dump
     end
 end

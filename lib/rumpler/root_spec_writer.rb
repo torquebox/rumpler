@@ -1,17 +1,17 @@
 
 module Rumpler
 
-  class ApplicationSpecWriter
+  class RootSpecWriter
 
     attr_accessor :name
     attr_accessor :version
     attr_accessor :definition
     attr_accessor :config
 
-    def initialize(name, version, definition, config, out)
+    def initialize(name, version, specs, config, out)
       @name = name
       @version = version
-      @definition = definition
+      @specs = specs
       @config = config
       @out = out
     end
@@ -46,13 +46,13 @@ module Rumpler
     end
 
     def dump_package_summary
-      emit "Name: #{name}-dependencies"
+      emit "Name: #{name}"
       emit "Version: #{version}"
       emit "Release: 1%{?dist}"
       emit "Group: Development/Languages"
       emit "License: GPLv2+ or Ruby"
       emit "BuildArch: noarch"
-      emit "Summary: Dependencies for #{name}"
+      emit "Summary: Root dependencies for #{name}"
       emit ''
     end
 
@@ -62,10 +62,8 @@ module Rumpler
     def dump_requires
       emit "Requires: ruby(abi) = %{ruby_abi}"
       emit ""
-      definition.current_dependencies.each do |dep|
-        for req in dep.requirement.to_rpm 
-          emit "Requires: %{tree_prefix}rubygem(#{dep.name}) #{req}"
-        end
+      @specs.each do |spec|
+        emit "Requires: %{tree_prefix}rubygem(#{spec.name}) = #{spec.version}"
       end
       emit ''
     end

@@ -24,6 +24,7 @@ batch.inhibit_exclusions = false
 batch.version            = '0.0.0-dev'
 batch.force              = false
 batch.name               = 'bundle'
+batch.gem                = nil
 
 opts = OptionParser.new do |opts|
 
@@ -40,12 +41,17 @@ opts = OptionParser.new do |opts|
     batch.version = version
   end
 
+  opts.on( '-v version' ) do |version|
+    batch.version = version
+  end
+
   opts.on( '-G', '--gemfile' ) do 
     batch.mode    = :gemfile
   end
 
-  opts.on( '-g', '--gem' ) do 
+  opts.on( '-g', '--gem FQNAME' ) do |gem|
     batch.mode    = :gem
+    batch.gem     = gem
   end
 
   opts.on( '-r', '--root ROOT' ) do |root|
@@ -89,12 +95,21 @@ case ( batch.mode )
       puts "Argument not accepted yet, complain to Bob"
     end
   when :gemfile
-    exclusions = Rumpler::RootSpecsLoader.new( batch.root, batch.force).exclusions
+    exclusions = Rumpler::RootSpecsLoader.new( nil, nil, batch.root, batch.force).exclusions
     ARGV.each do |gemfile|
-      converter = Rumpler::GemfileConverter.new( gemfile, batch.output_dir )
-      converter.inhibit_exclusions = batch.inhibit_exclusions
+      converter = Rumpler::GemfileConverter.new( gemfile, batch.output_dir, Rumpler::Config.new, exclusions )
       converter.dump
     end
+  when :gem
+    exclusions = Rumpler::RootSpecsLoader.new( nil, nil, batch.root, batch.force).exclusions
+    gemfile_path = File.join( batch.output_dir, 'Gemfile' )
+    File.open( gemfile_path, 'w' ) do |f|
+      f.puts( "source 'http://rubygems.org/'" )
+      f.puts( "gem '#{batch.gem}', '#{batch.version}'" )
+    end
+    converter = Rumpler::GemfileConverter.new( gemfile_path, batch.output_dir, Rumpler::Config.new, exclusions )
+    converter.dump
+    
   else
     if ( ! batch.root.nil? )
       Rumpler::RootSpecsLoader.new( batch.name, batch.version, batch.root, batch.force, batch.output_dir ).dump

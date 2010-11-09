@@ -88,20 +88,20 @@ Gem.platforms.push( Gem::Platform::JAVA )
 
 case ( batch.mode )
   when :application
-    exclusions = Rumpler::RootSpecsLoader.new( nil, nil, batch.root, batch.force).exclusions
+    exclusions = batch.root.nil? ? [] : Rumpler::RootSpecsLoader.new( nil, nil, batch.root, batch.force).exclusions
     if ( ARGV.empty? )
       converter = Rumpler::ApplicationConverter.new( Dir.pwd, batch.version, batch.output_dir, exclusions ).dump
     else
       puts "Argument not accepted yet, complain to Bob"
     end
   when :gemfile
-    exclusions = Rumpler::RootSpecsLoader.new( nil, nil, batch.root, batch.force).exclusions
+    exclusions = batch.root.nil? ? [] : Rumpler::RootSpecsLoader.new( nil, nil, batch.root, batch.force).exclusions
     ARGV.each do |gemfile|
       converter = Rumpler::GemfileConverter.new( gemfile, batch.output_dir, Rumpler::Config.new, exclusions )
       converter.dump
     end
   when :gem
-    exclusions = Rumpler::RootSpecsLoader.new( nil, nil, batch.root, batch.force).exclusions
+    exclusions = batch.root.nil? ? [] : Rumpler::RootSpecsLoader.new( nil, nil, batch.root, batch.force).exclusions
     gemfile_path = File.join( batch.output_dir, 'Gemfile' )
     File.open( gemfile_path, 'w' ) do |f|
       f.puts( "source 'http://rubygems.org/'" )

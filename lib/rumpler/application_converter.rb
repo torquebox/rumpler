@@ -10,8 +10,9 @@ module Rumpler
     attr_accessor :version
     attr_accessor :exclusions
 
-    def initialize(app_dir, version, output_dir, exclusions=[])
+    def initialize(app_dir, version, output_dir, config=Config.new, exclusions=[])
       @app_dir = app_dir
+      @config = config
       @version = version
       @output_dir = output_dir
       @exclusions = exclusions
@@ -27,7 +28,7 @@ module Rumpler
 
       gemfile = File.join( app_dir, 'Gemfile' )
 
-      @gemfile_converter = GemfileConverter.new( gemfile, output_dir, Config.new, exclusions )
+      @gemfile_converter = GemfileConverter.new( gemfile, output_dir, @config, exclusions )
       @gemfile_converter.dump()
     end
 
@@ -37,7 +38,7 @@ module Rumpler
       
       puts "Dumping #{spec_file}"
       File.open( spec_file, 'w' ) do |f|
-        ApplicationSpecWriter.new( app_name, version, @gemfile_converter.definition, @gemfile_converter.ruby_config, f ).dump
+        ApplicationSpecWriter.new( app_name, version, @gemfile_converter.definition, @config, f ).dump
       end
     end
 

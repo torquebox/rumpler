@@ -73,6 +73,10 @@ opts = OptionParser.new do |opts|
   opts.on('-i', '--inhibit-exclusions', 'Inhibit default exclusions' ) do
     batch.inhibit_exclusions = true
   end
+  
+  opts.on( '-c', '--config CONFIG_FILE' ) do |config|
+    batch.config_file = config
+  end
 
   opts.on_tail("-h", "--help", "Show this message") do
     puts opts
@@ -86,32 +90,34 @@ opts.parse!( ARGV )
 
 Gem.platforms.push( Gem::Platform::JAVA )
 
+config = Rumpler::Config.new(batch.config_file)
+
 case ( batch.mode )
   when :application
-    exclusions = batch.root.nil? ? [] : Rumpler::RootSpecsLoader.new( nil, nil, batch.root, batch.force).exclusions
+    exclusions = batch.root.nil? ? [] : Rumpler::RootSpecsLoader.new( nil, nil, batch.root, batch.force, config ).exclusions
     if ( ARGV.empty? )
-      converter = Rumpler::ApplicationConverter.new( Dir.pwd, batch.version, batch.output_dir, exclusions ).dump
+      converter = Rumpler::ApplicationConverter.new( Dir.pwd, batch.version, batch.output_dir, config, exclusions ).dump
     else
       puts "Argument not accepted yet, complain to Bob"
     end
   when :gemfile
-    exclusions = batch.root.nil? ? [] : Rumpler::RootSpecsLoader.new( nil, nil, batch.root, batch.force).exclusions
+    exclusions = batch.root.nil? ? [] : Rumpler::RootSpecsLoader.new( nil, nil, batch.root, batch.force, config ).exclusions
     ARGV.each do |gemfile|
-      converter = Rumpler::GemfileConverter.new( gemfile, batch.output_dir, Rumpler::Config.new, exclusions )
+      converter = Rumpler::GemfileConverter.new( gemfile, batch.output_dir, config, exclusions )
       converter.dump
     end
   when :gem
-    exclusions = batch.root.nil? ? [] : Rumpler::RootSpecsLoader.new( nil, nil, batch.root, batch.force).exclusions
+    exclusions = batch.root.nil? ? [] : Rumpler::RootSpecsLoader.new( nil, nil, batch.root, batch.force, config ).exclusions
     gemfile_path = File.join( batch.output_dir, 'Gemfile' )
     File.open( gemfile_path, 'w' ) do |f|
       f.puts( "source 'http://rubygems.org/'" )
       f.puts( "gem '#{batch.gem}', '#{batch.version}'" )
     end
-    converter = Rumpler::GemfileConverter.new( gemfile_path, batch.output_dir, Rumpler::Config.new, exclusions )
+    converter = Rumpler::GemfileConverter.new( gemfile_path, batch.output_dir, config, exclusions )
     converter.dump
     
   else
     if ( ! batch.root.nil? )
-      Rumpler::RootSpecsLoader.new( batch.name, batch.version, batch.root, batch.force, batch.output_dir ).dump
+      Rumpler::RootSpecsLoader.new( batch.name, batch.version, batch.root, batch.force, config, batch.output_dir ).dump
     end
 end

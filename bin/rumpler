@@ -90,7 +90,7 @@ opts.parse!( ARGV )
 
 config = Rumpler::Config.new(batch.config_file)
 
-if config.ruby_abi.include?( 'java' )
+if config.ruby_abi.to_s.include?( 'java' )
   puts "Using Gem::Platform::JAVA"
   Gem.platforms.push( Gem::Platform::JAVA )
 else

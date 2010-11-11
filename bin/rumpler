@@ -96,7 +96,6 @@ if config.ruby_abi.to_s.include?( 'java' )
 else
   puts "Using MRI platform for gems"
 end
-exit
 
 case ( batch.mode )
   when :application

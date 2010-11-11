@@ -88,9 +88,15 @@ end
 
 opts.parse!( ARGV )
 
-Gem.platforms.push( Gem::Platform::JAVA )
-
 config = Rumpler::Config.new(batch.config_file)
+
+if config.ruby_abi.include?( 'java' )
+  puts "Using Gem::Platform::JAVA"
+  Gem.platforms.push( Gem::Platform::JAVA )
+else
+  puts "Using MRI platform for gems"
+end
+exit
 
 case ( batch.mode )
   when :application

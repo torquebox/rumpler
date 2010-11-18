@@ -1,4 +1,3 @@
-
 require 'bundler'
 require 'fileutils'
 
@@ -27,7 +26,7 @@ module Rumpler
 
     def resolve!()
       ENV['BUNDLE_GEMFILE'] = gemfile
-      @definition = Bundler::Definition.build( @gemfile, @gemfile + '.lock', true )
+      @definition = Bundler::Definition.build( @gemfile, @gemfile + '.lock', false )
       @definition.dependencies.reject!{|dep|  should_exclude_dep?( dep.name ) }
       @definition.resolve_remotely!
     end

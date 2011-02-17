@@ -14,6 +14,7 @@ end
 
 Gem::Installer.new( "%{SOURCE0}", {
   :force=>true,
+  :env_shebang=>true,
   :ignore_dependencies=>true,
   :install_dir=>"%{buildroot}%{gem_dir}",
   :bin_dir=>"%{buildroot}%{bin_dir}",

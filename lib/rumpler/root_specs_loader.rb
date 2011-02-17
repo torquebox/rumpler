@@ -123,7 +123,7 @@ module Rumpler
                       details[:gem_version].to_s,
                       details[:platform] ] 
         gemspec = Gem::SpecFetcher.fetcher.fetch_spec( spec_spec, URI.parse( details[:source] ) )
-        converter = GemspecConverter.new( out_dir, @config, gemspec )
+        converter = GemspecConverter.new( out_dir, @config, gemspec, details[:source] )
         converter.dump
         @gemspecs << gemspec
       end

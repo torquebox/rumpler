@@ -29,11 +29,12 @@ module Rumpler
     attr_accessor :gemspec
     attr_accessor :ruby_config
   
-    def initialize(output_dir, ruby_config, gemspec)
+    def initialize(output_dir, ruby_config, gemspec, source='http://rubygems.org')
       @output_dir  = output_dir
       @ruby_config = ruby_config
       @gemspec     = gemspec
       @out         = nil
+      @source      = source
     end
     
     def emit(*args)
@@ -48,9 +49,9 @@ module Rumpler
   
     def gem_url()
       if ( gemspec.platform != 'ruby' )
-        "http://rubygems.org/gems/#{gem_name}-#{version}-#{gemspec.platform}.gem"
+        "#{@source}/gems/#{gem_name}-#{version}-#{gemspec.platform}.gem"
       else
-        "http://rubygems.org/gems/#{gem_name}-#{version}.gem"
+        "#{@source}/gems/#{gem_name}-#{version}.gem"
       end
     end
   
